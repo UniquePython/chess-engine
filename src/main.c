@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 // --- Individual Pieces ------------>
 
 typedef enum piece_colour
@@ -44,6 +46,28 @@ static inline Piece white(PT type)
 static inline Piece black(PT type)
 {
     return make_piece(BLACK, type);
+}
+
+// --- Piece Comparison Helpers ------------>
+
+static inline bool is_empty(Piece p)
+{
+    return p.type == NO_PIECE;
+}
+
+static inline bool is_white(Piece p)
+{
+    return p.colour == WHITE;
+}
+
+static inline bool is_black(Piece p)
+{
+    return p.colour == BLACK;
+}
+
+static inline bool same_color(Piece a, Piece b)
+{
+    return a.colour == b.colour;
 }
 
 // --- Board ------------>
