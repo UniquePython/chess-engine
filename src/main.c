@@ -1,6 +1,25 @@
-#include <stdio.h>
+// --- Individual Pieces ------------>
 
-int main(void) {
-    printf("chess-engine\n");
-    return 0;
-}
+typedef enum piece_colour
+{
+    NO_COLOR,
+    WHITE,
+    BLACK
+} PC;
+
+typedef enum piece_type
+{
+    NO_PIECE,
+    PAWN,
+    KNIGHT,
+    BISHOP,
+    ROOK,
+    QUEEN,
+    KING
+} PT;
+
+typedef struct piece
+{
+    PC colour;
+    PT type;
+} Piece;
