@@ -193,3 +193,61 @@ static inline void init_board(Board *b)
     set(b, (Loc){EIGHT, G}, black(KNIGHT));
     set(b, (Loc){EIGHT, H}, black(ROOK));
 }
+
+// --- Debug ------------>
+
+static inline char piece_to_char(Piece p)
+{
+    if (is_empty(p))
+        return '.';
+
+    char c;
+
+    switch (p.type)
+    {
+    case PAWN:
+        c = 'P';
+        break;
+    case KNIGHT:
+        c = 'N';
+        break;
+    case BISHOP:
+        c = 'B';
+        break;
+    case ROOK:
+        c = 'R';
+        break;
+    case QUEEN:
+        c = 'Q';
+        break;
+    case KING:
+        c = 'K';
+        break;
+    default:
+        c = '?';
+        break;
+    }
+
+    if (p.colour == BLACK)
+        c = c + ('a' - 'A'); // lowercase for black
+
+    return c;
+}
+
+static inline void print_board(Board *b)
+{
+    for (int r = EIGHT; r >= ONE; r--)
+    {
+        printf("%d  ", r + 1);
+
+        for (int f = A; f <= H; f++)
+        {
+            Piece p = get(b, (Loc){r, f});
+            printf("%c ", piece_to_char(p));
+        }
+
+        printf("\n");
+    }
+
+    printf("\n   a b c d e f g h\n");
+}
