@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdio.h>
 
 // --- Individual Pieces ------------>
 
@@ -250,4 +251,15 @@ static inline void print_board(Board *b)
     }
 
     printf("\n   a b c d e f g h\n");
+}
+
+// --- Entry point ------------>
+
+int main(void)
+{
+    Board b;
+    init_board(&b);
+    print_board(&b);
+
+    return 0;
 }
