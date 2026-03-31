@@ -148,3 +148,14 @@ void set(Board *b, Loc l, Piece p)
 {
     b->squares[index_of(l)] = p;
 }
+
+// --- Move ------------>
+
+typedef struct
+{
+    Loc from;
+    Loc to;
+    PT promotion;
+    bool is_castle;
+    bool is_en_passant;
+} Move;
