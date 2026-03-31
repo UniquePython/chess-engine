@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <stddef.h>
 
 // --- Individual Pieces ------------>
 
@@ -127,24 +126,24 @@ typedef struct
 
 // --- Board Helpers ------------>
 
-static inline size_t index_of(Loc s)
+static inline int index_of(Loc s)
 {
     return s.rank * 8 + s.file;
 }
 
-static inline Loc loc_of(size_t i)
+static inline Loc loc_of(int i)
 {
     return (Loc){i / 8, i % 8};
 }
 
 // --- Getter / Setter ------------>
 
-Piece get(Board *b, Loc l)
+static inline Piece get(Board *b, Loc l)
 {
     return b->squares[index_of(l)];
 }
 
-void set(Board *b, Loc l, Piece p)
+static inline void set(Board *b, Loc l, Piece p)
 {
     b->squares[index_of(l)] = p;
 }
