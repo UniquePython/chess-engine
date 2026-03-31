@@ -52,7 +52,7 @@ static inline Piece black(PT type)
 
 static inline bool is_empty(Piece p)
 {
-    return p.type == NO_PIECE;
+    return p.type == NO_PIECE && p.colour == NO_COLOUR;
 }
 
 static inline bool is_white(Piece p)
@@ -65,9 +65,14 @@ static inline bool is_black(Piece p)
     return p.colour == BLACK;
 }
 
-static inline bool same_color(Piece a, Piece b)
+static inline bool is_same_color(Piece a, Piece b)
 {
-    return a.colour == b.colour;
+    return a.colour != NO_COLOUR && a.colour == b.colour;
+}
+
+static inline bool is_opposite_color(Piece a, Piece b)
+{
+    return a.colour != NO_COLOUR && b.colour != NO_COLOUR && a.colour != b.colour;
 }
 
 // --- Piece Info Helpers ------------>
