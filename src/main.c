@@ -70,6 +70,18 @@ static inline bool same_color(Piece a, Piece b)
     return a.colour == b.colour;
 }
 
+// --- Piece Info Helpers ------------>
+
+static inline PT type_of(Piece p)
+{
+    return p.type;
+}
+
+static inline PC colour_of(Piece p)
+{
+    return p.colour;
+}
+
 // --- Board ------------>
 
 typedef struct
