@@ -89,6 +89,36 @@ static inline PC colour_of(Piece p)
 
 // --- Board ------------>
 
+typedef enum rank
+{
+    ONE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE,
+    SIX,
+    SEVEN,
+    EIGHT
+} Rank;
+
+typedef enum file
+{
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H
+} File;
+
+typedef struct location
+{
+    Rank rank;
+    File file;
+} Loc;
+
 typedef struct
 {
     Piece squares[64];
