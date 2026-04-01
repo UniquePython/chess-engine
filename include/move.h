@@ -6,7 +6,7 @@
 
 #include <stdbool.h>
 
-typedef struct
+typedef struct move
 {
     Loc from;
     Loc to;

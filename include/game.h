@@ -7,6 +7,21 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+typedef struct undo_information
+{
+    Move move_to_undo;
+
+    Piece captured_piece;
+
+    bool white_king_can_castle_kingside;
+    bool white_king_can_castle_queenside;
+    bool black_king_can_castle_kingside;
+    bool black_king_can_castle_queenside;
+
+    bool en_passant_available;
+    Loc en_passant_square;
+} UndoInfo;
+
 typedef struct game
 {
     Board board;
@@ -20,7 +35,7 @@ typedef struct game
     bool en_passant_available;
     Loc en_passant_square;
 
-    Move history[6000];
+    UndoInfo history[6000];
     size_t n_moves;
 } Game;
 
