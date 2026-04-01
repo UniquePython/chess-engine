@@ -41,4 +41,6 @@ typedef struct game
 
 void init_game(Game *game);
 
+void apply_move(Game *g, Move m);
+
 #endif
