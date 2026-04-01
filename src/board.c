@@ -2,17 +2,6 @@
 
 #include <stdio.h>
 
-/* indexing */
-size_t index_of(Loc l)
-{
-    return l.rank * 8 + l.file;
-}
-
-Loc loc_of(size_t i)
-{
-    return (Loc){i / 8, i % 8};
-}
-
 /* access */
 Piece get(Board *b, Loc l)
 {
