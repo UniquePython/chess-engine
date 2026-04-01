@@ -24,4 +24,6 @@ typedef struct game
     size_t n_moves;
 } Game;
 
+void init_game(Game *game);
+
 #endif

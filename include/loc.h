@@ -10,7 +10,8 @@ typedef enum rank
     FIVE,
     SIX,
     SEVEN,
-    EIGHT
+    EIGHT,
+    NO_RANK
 } Rank;
 
 typedef enum file
@@ -22,7 +23,8 @@ typedef enum file
     E,
     F,
     G,
-    H
+    H,
+    NO_FILE
 } File;
 
 typedef struct location
