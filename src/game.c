@@ -17,6 +17,4 @@ void init_game(Game *game)
     game->en_passant_square = (Loc){NO_RANK, NO_FILE};
 
     game->n_moves = 0;
-
-    return game;
 }
