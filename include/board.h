@@ -2,7 +2,7 @@
 #define BOARD_H
 
 #include "piece.h"
-#include "move.h"
+#include "loc.h"
 
 #include <stddef.h>
 

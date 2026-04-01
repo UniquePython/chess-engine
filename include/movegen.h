@@ -2,6 +2,7 @@
 #define MOVEGEN_H
 
 #include "move.h"
+#include "board.h"
 
 typedef enum
 {
@@ -22,5 +23,6 @@ static inline void add_move(Move *moves, int *count, Loc from, Loc to)
 }
 
 void generate_pawn_moves(Board *b, Loc from, Move *moves, int *count);
+int generate_moves(Board *b, Side side, Move *moves);
 
 #endif
