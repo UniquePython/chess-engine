@@ -202,6 +202,30 @@ static void generate_queen_moves(Board *b, Loc from, Move *moves, int *count)
     generate_rook_moves(b, from, moves, count);
 }
 
+static void generate_king_moves(Board *b, Loc from, Move *moves, int *count)
+{
+    int dirs[8][2] = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+
+    Piece p = get(b, from);
+
+    for (int i = 0; i < 8; i++)
+    {
+        int r = from.rank + dirs[i][0];
+        int f = from.file + dirs[i][1];
+
+        // bounds check
+        if (ONE > r || r > EIGHT || A > f || f > H)
+            continue;
+
+        Loc to = {r, f};
+        Piece target = get(b, to);
+
+        // not friendly → add move
+        if (!is_same_color(p, target))
+            add_move(moves, count, from, to);
+    }
+}
+
 int generate_moves(Board *b, Side side, Move *moves)
 {
     int count = 0;
@@ -244,8 +268,12 @@ int generate_moves(Board *b, Side side, Move *moves)
             generate_queen_moves(b, from, moves, &count);
             break;
 
+        case KING:
+            generate_king_moves(b, from, moves, &count);
+            break;
+
         default:
-            break; // other pieces later
+            break;
         }
     }
 
