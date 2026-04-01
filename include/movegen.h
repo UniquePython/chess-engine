@@ -38,7 +38,6 @@ static inline void add_promotion(Move *moves, int *count, Loc from, Loc to)
     }
 }
 
-void generate_pawn_moves(Board *b, Loc from, Move *moves, int *count);
 int generate_moves(Board *b, Side side, Move *moves);
 
 #endif

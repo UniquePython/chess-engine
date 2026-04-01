@@ -114,13 +114,37 @@ void generate_pawn_moves(Board *b, Loc from, Move *moves, int *count)
 {
     Piece p = get(b, from);
 
-    if (p.type != PAWN)
-        return;
-
     if (p.colour == WHITE)
         gen_white_pawn(b, from, moves, count);
     else if (p.colour == BLACK)
         gen_black_pawn(b, from, moves, count);
+}
+
+static void generate_knight_moves(Board *b, Loc from, Move *moves, int *count)
+{
+    int offsets[8][2] = {
+        {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+
+    Piece p = get(b, from);
+
+    for (int i = 0; i < 8; i++)
+    {
+        int r = from.rank + offsets[i][0];
+        int f = from.file + offsets[i][1];
+
+        // bounds check
+        if (ONE > r || r > EIGHT || A > f || f > H)
+            continue;
+
+        // get target, check not friendly
+        Loc jump = {r, f};
+        Piece target = get(b, jump);
+
+        if (is_same_color(p, target))
+            continue;
+
+        add_move(moves, count, from, jump);
+    }
 }
 
 int generate_moves(Board *b, Side side, Move *moves)
@@ -147,6 +171,10 @@ int generate_moves(Board *b, Side side, Move *moves)
         {
         case PAWN:
             generate_pawn_moves(b, from, moves, &count);
+            break;
+
+        case KNIGHT:
+            generate_knight_moves(b, from, moves, &count);
             break;
 
         default:
