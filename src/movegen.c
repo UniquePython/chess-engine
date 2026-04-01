@@ -120,7 +120,7 @@ void generate_pawn_moves(Board *b, Loc from, Move *moves, int *count)
         gen_black_pawn(b, from, moves, count);
 }
 
-static void generate_knight_moves(Board *b, Loc from, Move *moves, int *count)
+void generate_knight_moves(Board *b, Loc from, Move *moves, int *count)
 {
     int offsets[8][2] = {
         {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
@@ -144,6 +144,43 @@ static void generate_knight_moves(Board *b, Loc from, Move *moves, int *count)
             continue;
 
         add_move(moves, count, from, jump);
+    }
+}
+
+static void gen_sliding(Board *b, Loc from, Move *moves, int *count, int dirs[][2], int ndir)
+{
+    Piece p = get(b, from);
+
+    for (int d = 0; d < ndir; d++)
+    {
+        int r = from.rank;
+        int f = from.file;
+
+        while (1)
+        {
+            r += dirs[d][0];
+            f += dirs[d][1];
+
+            // bounds check
+            if (ONE > r || r > EIGHT || A > f || f > H)
+                break;
+
+            Loc to = {r, f};
+            Piece target = get(b, to);
+
+            // friendly → break
+            if (is_same_color(p, target))
+                break;
+
+            // enemy → break (capture, but stop sliding)
+            if (is_opposite_color(p, target))
+            {
+                add_move(moves, count, from, to);
+                break;
+            }
+
+            add_move(moves, count, from, to);
+        }
     }
 }
 
