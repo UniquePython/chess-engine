@@ -110,7 +110,7 @@ static void gen_black_pawn(Board *b, Loc from, Move *moves, int *count)
     }
 }
 
-void generate_pawn_moves(Board *b, Loc from, Move *moves, int *count)
+static void generate_pawn_moves(Board *b, Loc from, Move *moves, int *count)
 {
     Piece p = get(b, from);
 
@@ -120,7 +120,7 @@ void generate_pawn_moves(Board *b, Loc from, Move *moves, int *count)
         gen_black_pawn(b, from, moves, count);
 }
 
-void generate_knight_moves(Board *b, Loc from, Move *moves, int *count)
+static void generate_knight_moves(Board *b, Loc from, Move *moves, int *count)
 {
     int offsets[8][2] = {
         {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
@@ -184,6 +184,24 @@ static void gen_sliding(Board *b, Loc from, Move *moves, int *count, int dirs[][
     }
 }
 
+static void generate_bishop_moves(Board *b, Loc from, Move *moves, int *count)
+{
+    int dirs[4][2] = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+    gen_sliding(b, from, moves, count, dirs, 4);
+}
+
+static void generate_rook_moves(Board *b, Loc from, Move *moves, int *count)
+{
+    int dirs[4][2] = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
+    gen_sliding(b, from, moves, count, dirs, 4);
+}
+
+static void generate_queen_moves(Board *b, Loc from, Move *moves, int *count)
+{
+    generate_bishop_moves(b, from, moves, count);
+    generate_rook_moves(b, from, moves, count);
+}
+
 int generate_moves(Board *b, Side side, Move *moves)
 {
     int count = 0;
@@ -212,6 +230,18 @@ int generate_moves(Board *b, Side side, Move *moves)
 
         case KNIGHT:
             generate_knight_moves(b, from, moves, &count);
+            break;
+
+        case BISHOP:
+            generate_bishop_moves(b, from, moves, &count);
+            break;
+
+        case ROOK:
+            generate_rook_moves(b, from, moves, &count);
+            break;
+
+        case QUEEN:
+            generate_queen_moves(b, from, moves, &count);
             break;
 
         default:
