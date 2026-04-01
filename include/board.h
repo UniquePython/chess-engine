@@ -4,8 +4,6 @@
 #include "piece.h"
 #include "loc.h"
 
-#include <stddef.h>
-
 typedef struct board
 {
     Piece squares[64];
