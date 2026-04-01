@@ -90,3 +90,37 @@ void generate_pawn_moves(Board *b, Loc from, Move *moves, int *count)
     else if (p.colour == BLACK)
         gen_black_pawn(b, from, moves, count);
 }
+
+int generate_moves(Board *b, Side side, Move *moves)
+{
+    int count = 0;
+
+    for (int i = 0; i < 64; i++)
+    {
+        Loc from = loc_of(i);
+        Piece p = get(b, from);
+
+        if (is_empty(p))
+            continue;
+
+        // filter by side
+        if (side == SIDE_WHITE && p.colour != WHITE)
+            continue;
+
+        if (side == SIDE_BLACK && p.colour != BLACK)
+            continue;
+
+        // dispatch by piece type
+        switch (p.type)
+        {
+        case PAWN:
+            generate_pawn_moves(b, from, moves, &count);
+            break;
+
+        default:
+            break; // other pieces later
+        }
+    }
+
+    return count;
+}
