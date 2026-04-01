@@ -2,6 +2,9 @@
 
 static void gen_white_pawn(Board *b, Loc from, Move *moves, int *count)
 {
+    if (from.rank == EIGHT)
+        return;
+
     Loc one_forward = {from.rank + 1, from.file};
 
     // 1 step forward
@@ -41,6 +44,9 @@ static void gen_white_pawn(Board *b, Loc from, Move *moves, int *count)
 
 static void gen_black_pawn(Board *b, Loc from, Move *moves, int *count)
 {
+    if (from.rank == ONE)
+        return;
+
     Loc one_forward = {from.rank - 1, from.file};
 
     // 1 step forward
