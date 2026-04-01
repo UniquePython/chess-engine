@@ -22,6 +22,22 @@ static inline void add_move(Move *moves, int *count, Loc from, Loc to)
     (*count)++;
 }
 
+static inline void add_promotion(Move *moves, int *count, Loc from, Loc to)
+{
+    PT types[4] = {QUEEN, ROOK, BISHOP, KNIGHT};
+
+    for (int i = 0; i < 4; i++)
+    {
+        moves[*count] = (Move){
+            .from = from,
+            .to = to,
+            .promotion = types[i],
+            .is_castle = false,
+            .is_en_passant = false};
+        (*count)++;
+    }
+}
+
 void generate_pawn_moves(Board *b, Loc from, Move *moves, int *count);
 int generate_moves(Board *b, Side side, Move *moves);
 

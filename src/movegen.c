@@ -10,7 +10,10 @@ static void gen_white_pawn(Board *b, Loc from, Move *moves, int *count)
     // 1 step forward
     if (is_empty(get(b, one_forward)))
     {
-        add_move(moves, count, from, one_forward);
+        if (one_forward.rank == EIGHT)
+            add_promotion(moves, count, from, one_forward);
+        else
+            add_move(moves, count, from, one_forward);
 
         // 2 step forward (only from rank TWO)
         if (from.rank == TWO)
@@ -29,7 +32,12 @@ static void gen_white_pawn(Board *b, Loc from, Move *moves, int *count)
         Piece target = get(b, left_cap);
 
         if (!is_empty(target) && is_black(target))
-            add_move(moves, count, from, left_cap);
+        {
+            if (left_cap.rank == EIGHT)
+                add_promotion(moves, count, from, left_cap);
+            else
+                add_move(moves, count, from, left_cap);
+        }
     }
 
     if (from.file < H)
@@ -38,7 +46,12 @@ static void gen_white_pawn(Board *b, Loc from, Move *moves, int *count)
         Piece target = get(b, right_cap);
 
         if (!is_empty(target) && is_black(target))
-            add_move(moves, count, from, right_cap);
+        {
+            if (right_cap.rank == EIGHT)
+                add_promotion(moves, count, from, right_cap);
+            else
+                add_move(moves, count, from, right_cap);
+        }
     }
 }
 
@@ -52,7 +65,10 @@ static void gen_black_pawn(Board *b, Loc from, Move *moves, int *count)
     // 1 step forward
     if (is_empty(get(b, one_forward)))
     {
-        add_move(moves, count, from, one_forward);
+        if (one_forward.rank == ONE)
+            add_promotion(moves, count, from, one_forward);
+        else
+            add_move(moves, count, from, one_forward);
 
         // 2 step forward (only from rank SEVEN)
         if (from.rank == SEVEN)
@@ -71,7 +87,12 @@ static void gen_black_pawn(Board *b, Loc from, Move *moves, int *count)
         Piece target = get(b, left_cap);
 
         if (!is_empty(target) && is_white(target))
-            add_move(moves, count, from, left_cap);
+        {
+            if (left_cap.rank == ONE)
+                add_promotion(moves, count, from, left_cap);
+            else
+                add_move(moves, count, from, left_cap);
+        }
     }
 
     if (from.file < H)
@@ -80,7 +101,12 @@ static void gen_black_pawn(Board *b, Loc from, Move *moves, int *count)
         Piece target = get(b, right_cap);
 
         if (!is_empty(target) && is_white(target))
-            add_move(moves, count, from, right_cap);
+        {
+            if (right_cap.rank == ONE)
+                add_promotion(moves, count, from, right_cap);
+            else
+                add_move(moves, count, from, right_cap);
+        }
     }
 }
 
