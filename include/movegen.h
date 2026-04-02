@@ -38,6 +38,13 @@ static inline void add_promotion(Move *moves, int *count, Loc from, Loc to)
     }
 }
 
+void generate_pawn_moves(Board *b, Loc from, Move *moves, int *count);
+void generate_knight_moves(Board *b, Loc from, Move *moves, int *count);
+void generate_bishop_moves(Board *b, Loc from, Move *moves, int *count);
+void generate_rook_moves(Board *b, Loc from, Move *moves, int *count);
+void generate_queen_moves(Board *b, Loc from, Move *moves, int *count);
+void generate_king_moves(Board *b, Loc from, Move *moves, int *count);
+
 int generate_moves(Board *b, Side side, Move *moves);
 
 #endif
