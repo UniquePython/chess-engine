@@ -1,5 +1,7 @@
 #include "movegen.h"
 
+#include <stdbool.h>
+
 static void gen_white_pawn(Board *b, Loc from, Move *moves, int *count)
 {
     if (from.rank == EIGHT)
@@ -278,4 +280,95 @@ int generate_moves(Board *b, Side side, Move *moves)
     }
 
     return count;
+}
+
+bool is_square_attacked(Board *b, Loc square, Side attacker)
+{
+    PC attacking_colour = (attacker == SIDE_WHITE) ? WHITE : BLACK;
+
+    // rook/queen (cardinal rays)
+    int cardinal[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    for (int d = 0; d < 4; d++)
+    {
+        int r = square.rank;
+        int f = square.file;
+        while (1)
+        {
+            r += cardinal[d][0];
+            f += cardinal[d][1];
+            if (r < ONE || r > EIGHT || f < A || f > H)
+                break;
+            Piece p = get(b, (Loc){r, f});
+            if (!is_empty(p))
+            {
+                if (p.colour == attacking_colour && (p.type == ROOK || p.type == QUEEN))
+                    return true;
+                break;
+            }
+        }
+    }
+
+    // bishop/queen (diagonal rays)
+    int diagonal[4][2] = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+    for (int d = 0; d < 4; d++)
+    {
+        int r = square.rank;
+        int f = square.file;
+        while (1)
+        {
+            r += diagonal[d][0];
+            f += diagonal[d][1];
+            if (r < ONE || r > EIGHT || f < A || f > H)
+                break;
+            Piece p = get(b, (Loc){r, f});
+            if (!is_empty(p))
+            {
+                if (p.colour == attacking_colour && (p.type == BISHOP || p.type == QUEEN))
+                    return true;
+                break;
+            }
+        }
+    }
+
+    // knight
+    int knight_jumps[8][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+    for (int i = 0; i < 8; i++)
+    {
+        int r = square.rank + knight_jumps[i][0];
+        int f = square.file + knight_jumps[i][1];
+        if (r < ONE || r > EIGHT || f < A || f > H)
+            continue;
+        Piece p = get(b, (Loc){r, f});
+        if (p.colour == attacking_colour && p.type == KNIGHT)
+            return true;
+    }
+
+    // pawns
+    int pawn_rank_dir = (attacker == SIDE_WHITE) ? -1 : 1;
+    int pawn_files[2] = {-1, 1};
+    for (int i = 0; i < 2; i++)
+    {
+        int r = square.rank + pawn_rank_dir;
+        int f = square.file + pawn_files[i];
+        if (r < ONE || r > EIGHT || f < A || f > H)
+            continue;
+        Piece p = get(b, (Loc){r, f});
+        if (p.colour == attacking_colour && p.type == PAWN)
+            return true;
+    }
+
+    // king
+    int king_dirs[8][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+    for (int i = 0; i < 8; i++)
+    {
+        int r = square.rank + king_dirs[i][0];
+        int f = square.file + king_dirs[i][1];
+        if (r < ONE || r > EIGHT || f < A || f > H)
+            continue;
+        Piece p = get(b, (Loc){r, f});
+        if (p.colour == attacking_colour && p.type == KING)
+            return true;
+    }
+
+    return false;
 }

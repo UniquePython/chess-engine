@@ -47,4 +47,6 @@ void generate_king_moves(Board *b, Loc from, Move *moves, int *count);
 
 int generate_moves(Board *b, Side side, Move *moves);
 
+bool is_square_attacked(Board *b, Loc square, Side attacker);
+
 #endif
