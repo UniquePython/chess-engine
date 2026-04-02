@@ -372,3 +372,19 @@ bool is_square_attacked(Board *b, Loc square, Side attacker)
 
     return false;
 }
+
+bool is_in_check(Game *g, Side side)
+{
+    PC colour = (side == SIDE_WHITE) ? WHITE : BLACK;
+    Side attacker = (side == SIDE_WHITE) ? SIDE_BLACK : SIDE_WHITE;
+
+    // find the king
+    for (int i = 0; i < 64; i++)
+    {
+        Piece p = g->board.squares[i];
+        if (p.colour == colour && p.type == KING)
+            return is_square_attacked(&g->board, loc_of(i), attacker);
+    }
+
+    return false; // no king found (shouldn't happen in a valid game)
+}
