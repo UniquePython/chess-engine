@@ -5,12 +5,6 @@
 #include "board.h"
 #include "game.h"
 
-typedef enum
-{
-    SIDE_WHITE,
-    SIDE_BLACK
-} Side;
-
 static inline void add_move(Move *moves, int *count, Loc from, Loc to)
 {
     moves[*count] = (Move){

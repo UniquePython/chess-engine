@@ -2,10 +2,16 @@
 #define GAME_H
 
 #include "board.h"
-#include "movegen.h"
+#include "move.h"
 
 #include <stdbool.h>
 #include <stddef.h>
+
+typedef enum
+{
+    SIDE_WHITE,
+    SIDE_BLACK
+} Side;
 
 typedef struct undo_information
 {
