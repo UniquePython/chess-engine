@@ -44,4 +44,6 @@ int generate_moves(Board *b, Side side, Move *moves);
 bool is_square_attacked(Board *b, Loc square, Side attacker);
 bool is_in_check(Game *g, Side side);
 
+int generate_legal_moves(Game *g, Side side, Move *moves);
+
 #endif

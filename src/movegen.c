@@ -388,3 +388,23 @@ bool is_in_check(Game *g, Side side)
 
     return false; // no king found (shouldn't happen in a valid game)
 }
+
+int generate_legal_moves(Game *g, Side side, Move *moves)
+{
+    Move pseudo[256];
+    int pseudo_count = generate_moves(&g->board, side, pseudo);
+
+    int count = 0;
+
+    for (int i = 0; i < pseudo_count; i++)
+    {
+        apply_move(g, pseudo[i]);
+
+        if (!is_in_check(g, side))
+            moves[count++] = pseudo[i];
+
+        undo_move(g);
+    }
+
+    return count;
+}
