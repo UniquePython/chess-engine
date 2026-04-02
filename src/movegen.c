@@ -381,7 +381,7 @@ bool is_in_check(Game *g, Side side)
     // find the king
     for (int i = 0; i < 64; i++)
     {
-        Piece p = g->board.squares[i];
+        Piece p = get(&g->board, loc_of(i));
         if (p.colour == colour && p.type == KING)
             return is_square_attacked(&g->board, loc_of(i), attacker);
     }
