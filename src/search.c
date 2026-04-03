@@ -7,12 +7,65 @@
 #define INFINITY_SCORE 1000000
 #define CHECKMATE_SCORE 999000
 
+static int quiescence(Game *g, int alpha, int beta, bool maximizing)
+{
+    int stand_pat = evaluate(g);
+
+    if (maximizing)
+    {
+        if (stand_pat >= beta)
+            return beta;
+        if (stand_pat > alpha)
+            alpha = stand_pat;
+    }
+    else
+    {
+        if (stand_pat <= alpha)
+            return alpha;
+        if (stand_pat < beta)
+            beta = stand_pat;
+    }
+
+    // Generate only captures
+    Move moves[256];
+    int count = generate_legal_moves(g, g->current_side, moves);
+
+    for (int i = 0; i < count; i++)
+    {
+        // Skip non-captures
+        Piece target = get(&g->board, moves[i].to);
+        if (is_empty(target) && !moves[i].is_en_passant)
+            continue;
+
+        apply_move(g, moves[i]);
+        int score = quiescence(g, alpha, beta, !maximizing);
+        undo_move(g);
+
+        if (maximizing)
+        {
+            if (score > alpha)
+                alpha = score;
+            if (alpha >= beta)
+                return beta;
+        }
+        else
+        {
+            if (score < beta)
+                beta = score;
+            if (beta <= alpha)
+                return alpha;
+        }
+    }
+
+    return maximizing ? alpha : beta;
+}
+
 static int minimax(Game *g, int depth, int alpha, int beta, bool maximizing)
 {
     if (depth == 0)
-        return evaluate(g);
+        return quiescence(g, alpha, beta, maximizing);
 
-    Move moves[256];
+    Move moves[1024];
     int count = generate_legal_moves(g, g->current_side, moves);
 
     if (count == 0)
@@ -73,7 +126,7 @@ Move search(Game *g, int depth)
     Move best_move = {0};
     int best_score = maximizing ? -INFINITY_SCORE : INFINITY_SCORE;
 
-    Move moves[256];
+    Move moves[1024];
     int count = generate_legal_moves(g, g->current_side, moves);
 
     for (int i = 0; i < count; i++)
