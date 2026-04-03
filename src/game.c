@@ -170,7 +170,7 @@ void undo_move(Game *g)
         set(&g->board, m.from, original);
 
         // restore captured piece to m.to
-        set(&g->board, m.to, record.captured_piece); // empty if no capture
+        set(&g->board, m.to, m.is_en_passant ? no_piece() : record.captured_piece); // empty if no capture
     }
 
     if (m.is_en_passant)
