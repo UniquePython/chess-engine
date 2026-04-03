@@ -69,8 +69,9 @@ static int minimax(Game *g, int depth, int alpha, int beta, bool maximizing)
 
 Move search(Game *g, int depth)
 {
+    bool maximizing = (g->current_side == SIDE_WHITE);
     Move best_move = {0};
-    int best_score = -INFINITY_SCORE;
+    int best_score = maximizing ? -INFINITY_SCORE : INFINITY_SCORE;
 
     Move moves[256];
     int count = generate_legal_moves(g, g->current_side, moves);
@@ -78,16 +79,16 @@ Move search(Game *g, int depth)
     for (int i = 0; i < count; i++)
     {
         apply_move(g, moves[i]);
-        int score = minimax(g, depth - 1, -INFINITY_SCORE, INFINITY_SCORE, false);
+        int score = minimax(g, depth - 1, -INFINITY_SCORE, INFINITY_SCORE, g->current_side == SIDE_WHITE);
         undo_move(g);
 
-        if (score > best_score)
+        if (maximizing ? score > best_score : score < best_score)
         {
             best_score = score;
             best_move = moves[i];
         }
     }
 
-    printf("best score: %d\n", best_score);
+    // fprintf(stderr, "best score: %d\n", best_score);
     return best_move;
 }
