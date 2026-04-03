@@ -9,6 +9,13 @@
 
 typedef enum
 {
+    GAME_ONGOING,
+    GAME_CHECKMATE,
+    GAME_STALEMATE
+} GameStatus;
+
+typedef enum
+{
     SIDE_WHITE,
     SIDE_BLACK
 } Side;
