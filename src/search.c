@@ -156,29 +156,56 @@ static int minimax(Game *g, int depth, int alpha, int beta, bool maximizing)
     }
 }
 
-Move search(Game *g, int depth)
+Move search(Game *g, int max_depth)
 {
     bool maximizing = (g->current_side == SIDE_WHITE);
     Move best_move = {0};
-    int best_score = maximizing ? -INFINITY_SCORE : INFINITY_SCORE;
 
-    Move moves[1024];
-    int count = generate_legal_moves(g, g->current_side, moves);
-    sort_moves(g, moves, count);
-
-    for (int i = 0; i < count; i++)
+    for (int depth = 1; depth <= max_depth; depth++)
     {
-        apply_move(g, moves[i]);
-        int score = minimax(g, depth - 1, -INFINITY_SCORE, INFINITY_SCORE, g->current_side == SIDE_WHITE);
-        undo_move(g);
+        Move current_best = {0};
+        int best_score = maximizing ? -INFINITY_SCORE : INFINITY_SCORE;
 
-        if (maximizing ? score > best_score : score < best_score)
+        Move moves[1024];
+        int count = generate_legal_moves(g, g->current_side, moves);
+        sort_moves(g, moves, count);
+
+        // put best move from previous iteration first
+        if (depth > 1)
         {
-            best_score = score;
-            best_move = moves[i];
+            for (int i = 0; i < count; i++)
+            {
+                if (moves[i].from.rank == best_move.from.rank &&
+                    moves[i].from.file == best_move.from.file &&
+                    moves[i].to.rank == best_move.to.rank &&
+                    moves[i].to.file == best_move.to.file &&
+                    moves[i].promotion == best_move.promotion)
+                {
+                    // swap to front
+                    Move tmp = moves[0];
+                    moves[0] = moves[i];
+                    moves[i] = tmp;
+                    break;
+                }
+            }
         }
+
+        for (int i = 0; i < count; i++)
+        {
+            apply_move(g, moves[i]);
+            int score = minimax(g, depth - 1, -INFINITY_SCORE, INFINITY_SCORE, !maximizing);
+            undo_move(g);
+
+            if (maximizing ? score > best_score : score < best_score)
+            {
+                best_score = score;
+                current_best = moves[i];
+            }
+        }
+
+        best_move = current_best;
+        fprintf(stderr, "depth %d: score %d\n", depth, best_score);
     }
 
-    // fprintf(stderr, "best score: %d\n", best_score);
     return best_move;
 }
