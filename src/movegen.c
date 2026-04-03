@@ -389,10 +389,105 @@ bool is_in_check(Game *g, Side side)
     return false; // no king found (shouldn't happen in a valid game)
 }
 
+static void gen_castling(Game *g, Side side, Move *moves, int *count)
+{
+    Side attacker = (side == SIDE_WHITE) ? SIDE_BLACK : SIDE_WHITE;
+    Board *b = &g->board;
+
+    if (side == SIDE_WHITE)
+    {
+        // can't castle while in check
+        if (is_square_attacked(b, (Loc){ONE, E}, attacker))
+            return;
+
+        // kingside
+        if (g->white_king_can_castle_kingside)
+        {
+            if (is_empty(get(b, (Loc){ONE, F})) &&
+                is_empty(get(b, (Loc){ONE, G})) &&
+                !is_square_attacked(b, (Loc){ONE, F}, attacker) &&
+                !is_square_attacked(b, (Loc){ONE, G}, attacker))
+            {
+                moves[*count] = (Move){
+                    .from = (Loc){ONE, E},
+                    .to = (Loc){ONE, G},
+                    .promotion = NO_PIECE,
+                    .is_castle = true,
+                    .is_en_passant = false};
+                (*count)++;
+            }
+        }
+
+        // queenside
+        if (g->white_king_can_castle_queenside)
+        {
+            if (is_empty(get(b, (Loc){ONE, D})) &&
+                is_empty(get(b, (Loc){ONE, C})) &&
+                is_empty(get(b, (Loc){ONE, B})) &&
+                !is_square_attacked(b, (Loc){ONE, D}, attacker) &&
+                !is_square_attacked(b, (Loc){ONE, C}, attacker))
+            {
+                moves[*count] = (Move){
+                    .from = (Loc){ONE, E},
+                    .to = (Loc){ONE, C},
+                    .promotion = NO_PIECE,
+                    .is_castle = true,
+                    .is_en_passant = false};
+                (*count)++;
+            }
+        }
+    }
+    else
+    {
+        // can't castle while in check
+        if (is_square_attacked(b, (Loc){EIGHT, E}, attacker))
+            return;
+
+        // kingside
+        if (g->black_king_can_castle_kingside)
+        {
+            if (is_empty(get(b, (Loc){EIGHT, F})) &&
+                is_empty(get(b, (Loc){EIGHT, G})) &&
+                !is_square_attacked(b, (Loc){EIGHT, F}, attacker) &&
+                !is_square_attacked(b, (Loc){EIGHT, G}, attacker))
+            {
+                moves[*count] = (Move){
+                    .from = (Loc){EIGHT, E},
+                    .to = (Loc){EIGHT, G},
+                    .promotion = NO_PIECE,
+                    .is_castle = true,
+                    .is_en_passant = false};
+                (*count)++;
+            }
+        }
+
+        // queenside
+        if (g->black_king_can_castle_queenside)
+        {
+            if (is_empty(get(b, (Loc){EIGHT, D})) &&
+                is_empty(get(b, (Loc){EIGHT, C})) &&
+                is_empty(get(b, (Loc){EIGHT, B})) &&
+                !is_square_attacked(b, (Loc){EIGHT, D}, attacker) &&
+                !is_square_attacked(b, (Loc){EIGHT, C}, attacker))
+            {
+                moves[*count] = (Move){
+                    .from = (Loc){EIGHT, E},
+                    .to = (Loc){EIGHT, C},
+                    .promotion = NO_PIECE,
+                    .is_castle = true,
+                    .is_en_passant = false};
+                (*count)++;
+            }
+        }
+    }
+}
+
 int generate_legal_moves(Game *g, Side side, Move *moves)
 {
     Move pseudo[256];
     int pseudo_count = generate_moves(&g->board, side, pseudo);
+
+    gen_castling(g, side, pseudo, &pseudo_count);
 
     int count = 0;
 
