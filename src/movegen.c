@@ -2,6 +2,22 @@
 
 #include <stdbool.h>
 
+GameStatus get_game_status(Game *g)
+{
+    Move moves[256];
+    int count = generate_legal_moves(g, g->current_side, moves);
+
+    if (count == 0)
+    {
+        if (is_in_check(g, g->current_side))
+            return GAME_CHECKMATE;
+        else
+            return GAME_STALEMATE;
+    }
+
+    return GAME_ONGOING;
+}
+
 static void gen_white_pawn(Board *b, Loc from, Move *moves, int *count)
 {
     if (from.rank == EIGHT)

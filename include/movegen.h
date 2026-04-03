@@ -5,6 +5,15 @@
 #include "board.h"
 #include "game.h"
 
+typedef enum
+{
+    GAME_ONGOING,
+    GAME_CHECKMATE,
+    GAME_STALEMATE
+} GameStatus;
+
+GameStatus get_game_status(Game *g);
+
 static inline void add_move(Move *moves, int *count, Loc from, Loc to)
 {
     moves[*count] = (Move){
