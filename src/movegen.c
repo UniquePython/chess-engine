@@ -482,12 +482,49 @@ static void gen_castling(Game *g, Side side, Move *moves, int *count)
     }
 }
 
+static void gen_en_passant(Game *g, Side side, Move *moves, int *count)
+{
+    if (!g->en_passant_available)
+        return;
+
+    PC colour = (side == SIDE_WHITE) ? WHITE : BLACK;
+    Rank ep_rank = (side == SIDE_WHITE) ? FIVE : FOUR;
+    int direction = (side == SIDE_WHITE) ? 1 : -1;
+
+    Loc ep = g->en_passant_square;
+
+    // check left and right of the en passant square for a friendly pawn
+    int files[2] = {ep.file - 1, ep.file + 1};
+
+    for (int i = 0; i < 2; i++)
+    {
+        int f = files[i];
+        if (f < A || f > H)
+            continue;
+
+        Loc from = {ep_rank, f};
+        Piece p = get(&g->board, from);
+
+        if (p.colour == colour && p.type == PAWN)
+        {
+            moves[*count] = (Move){
+                .from = from,
+                .to = (Loc){ep_rank + direction, ep.file},
+                .promotion = NO_PIECE,
+                .is_castle = false,
+                .is_en_passant = true};
+            (*count)++;
+        }
+    }
+}
+
 int generate_legal_moves(Game *g, Side side, Move *moves)
 {
     Move pseudo[256];
     int pseudo_count = generate_moves(&g->board, side, pseudo);
 
     gen_castling(g, side, pseudo, &pseudo_count);
+    gen_en_passant(g, side, pseudo, &pseudo_count);
 
     int count = 0;
 
