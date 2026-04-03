@@ -7,6 +7,40 @@
 #define INFINITY_SCORE 1000000
 #define CHECKMATE_SCORE 999000
 
+static const int VICTIM_SCORE[7] = {0, 100, 200, 300, 400, 500, 600};
+static const int ATTACKER_SCORE[7] = {0, 6, 5, 4, 3, 2, 1};
+
+static int move_score(Game *g, Move m)
+{
+    if (m.is_en_passant)
+        return VICTIM_SCORE[PAWN] + ATTACKER_SCORE[PAWN];
+
+    Piece victim = get(&g->board, m.to);
+    if (!is_empty(victim))
+    {
+        Piece attacker = get(&g->board, m.from);
+        return VICTIM_SCORE[victim.type] + ATTACKER_SCORE[attacker.type];
+    }
+
+    return 0; // quiet move — sorted to the back
+}
+
+static void sort_moves(Game *g, Move *moves, int count)
+{
+    for (int i = 1; i < count; i++)
+    {
+        Move key = moves[i];
+        int key_score = move_score(g, key);
+        int j = i - 1;
+        while (j >= 0 && move_score(g, moves[j]) < key_score)
+        {
+            moves[j + 1] = moves[j];
+            j--;
+        }
+        moves[j + 1] = key;
+    }
+}
+
 static int quiescence(Game *g, int alpha, int beta, bool maximizing)
 {
     int stand_pat = evaluate(g);
@@ -29,6 +63,7 @@ static int quiescence(Game *g, int alpha, int beta, bool maximizing)
     // Generate only captures
     Move moves[256];
     int count = generate_legal_moves(g, g->current_side, moves);
+    sort_moves(g, moves, count);
 
     for (int i = 0; i < count; i++)
     {
@@ -67,6 +102,7 @@ static int minimax(Game *g, int depth, int alpha, int beta, bool maximizing)
 
     Move moves[1024];
     int count = generate_legal_moves(g, g->current_side, moves);
+    sort_moves(g, moves, count);
 
     if (count == 0)
     {
@@ -128,6 +164,7 @@ Move search(Game *g, int depth)
 
     Move moves[1024];
     int count = generate_legal_moves(g, g->current_side, moves);
+    sort_moves(g, moves, count);
 
     for (int i = 0; i < count; i++)
     {
