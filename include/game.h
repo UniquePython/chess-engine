@@ -57,4 +57,6 @@ void init_game(Game *game);
 void apply_move(Game *g, Move m);
 void undo_move(Game *g);
 
+GameStatus get_game_status(Game *g);
+
 #endif
