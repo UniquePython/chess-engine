@@ -536,7 +536,7 @@ static void gen_en_passant(Game *g, Side side, Move *moves, int *count)
 
 int generate_legal_moves(Game *g, Side side, Move *moves)
 {
-    Move pseudo[256];
+    Move pseudo[1024];
     int pseudo_count = generate_moves(&g->board, side, pseudo);
 
     gen_castling(g, side, pseudo, &pseudo_count);

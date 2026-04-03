@@ -8,7 +8,7 @@
 
 #define ENGINE_NAME "ChessEngine"
 #define ENGINE_AUTHOR "Ananyo Bhattacharya"
-#define SEARCH_DEPTH 5
+#define SEARCH_DEPTH 3
 
 // convert UCI square string like "e2" to Loc
 static Loc parse_square(const char *s)
