@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define ENGINE_NAME "ChessEngine"
 #define ENGINE_AUTHOR "Ananyo Bhattacharya"
@@ -113,11 +114,17 @@ static void handle_position(Game *g, const char *line)
     }
 }
 
+static double allocate_time_ms(int time_ms, int inc_ms)
+{
+    double allocated = time_ms / 30.0 + inc_ms * 0.8;
+    double cap = time_ms / 3.0;
+    return allocated < cap ? allocated : cap;
+}
+
 // handle "go" — run search and return bestmove
-static void handle_go(Game *g)
+static void handle_go(Game *g, const char *line)
 {
     GameStatus status = get_game_status(g);
-
     if (status != GAME_ONGOING)
     {
         printf("bestmove 0000\n");
@@ -125,7 +132,32 @@ static void handle_go(Game *g)
         return;
     }
 
-    Move best = search(g, SEARCH_DEPTH);
+    // parse time fields
+    int wtime = 0, btime = 0, winc = 0, binc = 0;
+    sscanf(strstr(line, "wtime") ? strstr(line, "wtime") : "", "wtime %d", &wtime);
+    sscanf(strstr(line, "btime") ? strstr(line, "btime") : "", "btime %d", &btime);
+    sscanf(strstr(line, "winc") ? strstr(line, "winc") : "", "winc %d", &winc);
+    sscanf(strstr(line, "binc") ? strstr(line, "binc") : "", "binc %d", &binc);
+
+    SearchTime st;
+    clock_gettime(CLOCK_MONOTONIC, &st.start);
+
+    if (wtime > 0 || btime > 0)
+    {
+        // timed game
+        int my_time = (g->current_side == SIDE_WHITE) ? wtime : btime;
+        int my_inc = (g->current_side == SIDE_WHITE) ? winc : binc;
+        st.allocated_ms = allocate_time_ms(my_time, my_inc);
+    }
+    else
+    {
+        // no time given (e.g. "go depth 5" or "go infinite") — fixed depth
+        st.allocated_ms = 1e9; // effectively unlimited, rely on max_depth
+    }
+
+    fprintf(stderr, "allocated %.0fms\n", st.allocated_ms);
+
+    Move best = search(g, 64, &st); // depth 64 = let time control it
 
     printf("bestmove ");
     print_uci_move(best);
@@ -167,7 +199,7 @@ void uci_loop(void)
         }
         else if (strncmp(line, "go", 2) == 0)
         {
-            handle_go(&g);
+            handle_go(&g, line);
         }
         else if (strcmp(line, "quit") == 0)
         {

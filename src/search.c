@@ -95,8 +95,22 @@ static int quiescence(Game *g, int alpha, int beta, bool maximizing)
     return maximizing ? alpha : beta;
 }
 
+static int node_count = 0;
+static SearchTime *g_st = NULL;
+static bool search_aborted = false;
+
 static int minimax(Game *g, int depth, int alpha, int beta, bool maximizing)
 {
+    // check time every 1024 nodes
+    if ((++node_count & 1023) == 0 && g_st && time_up(g_st))
+    {
+        search_aborted = true;
+        return 0; // score doesn't matter, discard this result
+    }
+
+    if (search_aborted)
+        return 0;
+
     if (depth == 0)
         return quiescence(g, alpha, beta, maximizing);
 
@@ -156,10 +170,14 @@ static int minimax(Game *g, int depth, int alpha, int beta, bool maximizing)
     }
 }
 
-Move search(Game *g, int max_depth)
+Move search(Game *g, int max_depth, SearchTime *st)
 {
     bool maximizing = (g->current_side == SIDE_WHITE);
     Move best_move = {0};
+
+    g_st = st;
+    search_aborted = false;
+    node_count = 0;
 
     for (int depth = 1; depth <= max_depth; depth++)
     {
@@ -181,7 +199,6 @@ Move search(Game *g, int max_depth)
                     moves[i].to.file == best_move.to.file &&
                     moves[i].promotion == best_move.promotion)
                 {
-                    // swap to front
                     Move tmp = moves[0];
                     moves[0] = moves[i];
                     moves[i] = tmp;
@@ -196,6 +213,9 @@ Move search(Game *g, int max_depth)
             int score = minimax(g, depth - 1, -INFINITY_SCORE, INFINITY_SCORE, !maximizing);
             undo_move(g);
 
+            if (search_aborted)
+                goto done; // discard incomplete depth, keep last best_move
+
             if (maximizing ? score > best_score : score < best_score)
             {
                 best_score = score;
@@ -203,9 +223,13 @@ Move search(Game *g, int max_depth)
             }
         }
 
-        best_move = current_best;
-        fprintf(stderr, "depth %d: score %d\n", depth, best_score);
+        best_move = current_best; // only update on fully completed depth
+        fprintf(stderr, "depth %d: score %d  (%.1fms)\n", depth, best_score, elapsed_ms(st));
+
+        if (time_up(st))
+            break;
     }
 
+done:
     return best_move;
 }
